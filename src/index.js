@@ -1,8 +1,24 @@
 import './css/styles.css';
-import { fetchCountries } from './fetchCountries'
+import { fetchImages } from './fetchCountries'
 // import Debounce from "lodash.debounce";
-// import Notiflix from 'notiflix';
+import Notiflix from 'notiflix';
 
+
+const form = document.querySelector(".search-form");
+const gallery = document.querySelector(".gallery");
+// console.log(form.searchQuery);
+
+form.addEventListener("input", onInput);
+
+function onInput(evt) {
+    console.log(evt.target.value.trim());
+
+
+}
+
+
+
+fetchImages("car").then(data => console.log(data)).catch(() => Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.'))
 
 
 
