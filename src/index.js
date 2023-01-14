@@ -5,10 +5,23 @@ import Notiflix from 'notiflix';
 
 const DEBOUNCE_DELAY = 700;
 
+let search = '';
+let page = 1;
+
 
 const form = document.querySelector(".search-form");
 const gallery = document.querySelector(".gallery");
-// console.log(gallery);
+const guard = document.querySelector(".js-guard");
+// console.log(guard);
+
+
+const options = {
+    root: null,
+    rootMargin: '300px',
+    threshold: 1.0,
+}
+
+const observe = new IntersectionObserver(onAddImages, options)
 
 form.addEventListener("submit", onSubmit);
 form.addEventListener("input", new Debounce(onInput, DEBOUNCE_DELAY));
@@ -17,13 +30,15 @@ function onSubmit(evt) {
     evt.preventDefault();
     console.dir(evt.currentTarget.searchQuery.value);
 
-    if (evt.currentTarget.searchQuery.value.trim()) {
-        fetchImages(evt.currentTarget.searchQuery.value.trim()).then(data => { createImages(data.hits), Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`) })
+    search = evt.currentTarget.searchQuery.value.trim();
+    if (search) {
+        fetchImages(search).then(data => { createImages(data.hits); observe.observe(guard); Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`) })
         .catch(() => Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.'))
     }
 }
 
 function onInput() {
+    search = '';
     gallery.innerHTML = '';
 }
 
@@ -48,8 +63,30 @@ function createImages(images) {
                 </p>
             </div>
         </div>`).join('');
-    gallery.innerHTML = markup;
+    // gallery.innerHTML = markup;
+    gallery.insertAdjacentHTML('beforeend', markup)
 }
+
+function onAddImages(entries, observe) {
+    console.log(entries);
+    console.log(search);
+
+        entries.forEach((entry) => {
+        if(entry.isIntersecting){
+            page+=1
+            fetchImages(search, page).then(data => {
+                createImages(data.hits);
+                // if(data.page === data.pages){
+                //     observer.unobserve(guard)
+                // }
+            })
+        }
+    })
+}
+
+
+
+
 
 
 
