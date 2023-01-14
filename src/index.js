@@ -1,24 +1,52 @@
 import './css/styles.css';
 import { fetchImages } from './fetchCountries'
-// import Debounce from "lodash.debounce";
+import Debounce from "lodash.debounce";
 import Notiflix from 'notiflix';
+
+const DEBOUNCE_DELAY = 700;
 
 
 const form = document.querySelector(".search-form");
 const gallery = document.querySelector(".gallery");
-// console.log(form.searchQuery);
+// console.log(gallery);
 
-form.addEventListener("input", onInput);
+form.addEventListener("input", new Debounce(onInput, DEBOUNCE_DELAY));
 
 function onInput(evt) {
     console.log(evt.target.value.trim());
+    gallery.innerHTML = '';
 
-
+    if (evt.target.value.trim()) {
+        fetchImages(evt.target.value.trim()).then(data => createImages(data.hits)).catch(() => Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.'))
+    }
 }
 
 
+function createImages(images) {
+    // console.log(images.hits);
+    const markup = images.map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => 
+        `<div class="photo-card">
+            <img src="${webformatURL}" alt="${tags}" loading="lazy" width="250px"/>
+            <div class="info">
+                <p class="info-item">
+                <b>Likes ${likes}</b>
+                </p>
+                <p class="info-item">
+                <b>Views ${views}</b>
+                </p>
+                <p class="info-item">
+                <b>Comments ${comments}</b>
+                </p>
+                <p class="info-item">
+                <b>Downloads ${downloads}</b>
+                </p>
+            </div>
+        </div>`).join('');
+    
 
-fetchImages("car").then(data => console.log(data)).catch(() => Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.'))
+    
+    gallery.innerHTML = markup;
+}
 
 
 
