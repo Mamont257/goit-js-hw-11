@@ -10,15 +10,21 @@ const form = document.querySelector(".search-form");
 const gallery = document.querySelector(".gallery");
 // console.log(gallery);
 
+form.addEventListener("submit", onSubmit);
 form.addEventListener("input", new Debounce(onInput, DEBOUNCE_DELAY));
 
-function onInput(evt) {
-    console.log(evt.target.value.trim());
-    gallery.innerHTML = '';
+function onSubmit(evt) {
+    evt.preventDefault();
+    console.dir(evt.currentTarget.searchQuery.value);
 
-    if (evt.target.value.trim()) {
-        fetchImages(evt.target.value.trim()).then(data => createImages(data.hits)).catch(() => Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.'))
+    if (evt.currentTarget.searchQuery.value.trim()) {
+        fetchImages(evt.currentTarget.searchQuery.value.trim()).then(data => { createImages(data.hits), Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`) })
+        .catch(() => Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.'))
     }
+}
+
+function onInput() {
+    gallery.innerHTML = '';
 }
 
 
@@ -42,9 +48,6 @@ function createImages(images) {
                 </p>
             </div>
         </div>`).join('');
-    
-
-    
     gallery.innerHTML = markup;
 }
 
