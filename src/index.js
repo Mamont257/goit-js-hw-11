@@ -1,9 +1,9 @@
 import './css/styles.css';
-import { fetchImages } from './fetchCountries'
-import Debounce from "lodash.debounce";
+import { fetchImages } from './fetchImages'
+// import Debounce from "lodash.debounce";
 import Notiflix from 'notiflix';
 
-const DEBOUNCE_DELAY = 700;
+// const DEBOUNCE_DELAY = 300;
 
 let search = '';
 let page = 1;
@@ -12,7 +12,6 @@ let page = 1;
 const form = document.querySelector(".search-form");
 const gallery = document.querySelector(".gallery");
 const guard = document.querySelector(".js-guard");
-// console.log(guard);
 
 
 const options = {
@@ -24,11 +23,12 @@ const options = {
 const observe = new IntersectionObserver(onAddImages, options)
 
 form.addEventListener("submit", onSubmit);
-form.addEventListener("input", new Debounce(onInput, DEBOUNCE_DELAY));
+// form.addEventListener("input", new Debounce(onInput, DEBOUNCE_DELAY));
 
 function onSubmit(evt) {
     evt.preventDefault();
-    console.dir(evt.currentTarget.searchQuery.value);
+    // console.dir(evt.currentTarget.searchQuery.value);
+    clearMarkup();
 
     search = evt.currentTarget.searchQuery.value.trim();
     if (search) {
@@ -37,11 +37,10 @@ function onSubmit(evt) {
     }
 }
 
-function onInput() {
-    search = '';
+function clearMarkup() {
+    observe.unobserve(guard);
     gallery.innerHTML = '';
 }
-
 
 function createImages(images) {
     // console.log(images.hits);
@@ -76,9 +75,9 @@ function onAddImages(entries, observe) {
             page+=1
             fetchImages(search, page).then(data => {
                 createImages(data.hits);
-                // if(data.page === data.pages){
-                //     observer.unobserve(guard)
-                // }
+                if(page === 13){
+                    observe.unobserve(guard)
+                }
             })
         }
     })

@@ -1,14 +1,3 @@
-//  export function fetchCountries(name) {
-//      const resp = fetch(`https://restcountries.com/v2/name/${name}?fields=name,capital,population,flags,languages`);
-//      return resp.then(resp => {
-//          if (resp.ok) {
-//             return resp.json()
-//          } else {
-//             throw new Error(resp.statusText)
-//          }
-//      })
-//  }
-
 export function fetchImages(name, page = 1) {
     const BASE_URL = 'https://pixabay.com/api/';
     const KEY = '32844399-402b025363825ff7850242d10';
@@ -25,5 +14,3 @@ export function fetchImages(name, page = 1) {
         return data;
     })
 }
-
-// console.log(fetchImages("car"));
