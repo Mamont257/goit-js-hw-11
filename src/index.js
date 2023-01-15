@@ -22,14 +22,13 @@ const observe = new IntersectionObserver(onAddImages, options)
 
 form.addEventListener("submit", onSubmit);
 
-function onSubmit(evt) {
+async function onSubmit(evt) {
     evt.preventDefault();
-    // console.dir(evt.currentTarget.searchQuery.value);
     clearMarkup();
 
     search = evt.currentTarget.searchQuery.value.trim();
     if (search) {
-        fetchImages(search).then(data => { createImages(data.hits); observe.observe(guard); Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`) })
+        await fetchImages(search).then(data => { createImages(data.hits); observe.observe(guard); Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`) })
         .catch(() => Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.'))
     }
 }
@@ -40,7 +39,6 @@ function clearMarkup() {
 }
 
 function createImages(images) {
-    // console.log(images.hits);
     const markup = images.map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => 
         `<div class="photo-card">
             <a class="gallery__item" href="${largeImageURL}">
@@ -61,17 +59,12 @@ function createImages(images) {
                 </p>
             </div>
         </div>`).join('');
-    // gallery.innerHTML = markup;
     gallery.insertAdjacentHTML('beforeend', markup)
 
     lightbox = new SimpleLightbox('.photo-card a', { captionDelay: 250, overlayOpacity: 0.5 });
-    // console.dir(lightbox);
 }
 
 function onAddImages(entries, observe) {
-    // console.log(entries);
-    // console.log(search);
-
         entries.forEach((entry) => {
         if(entry.isIntersecting){
             page+=1
