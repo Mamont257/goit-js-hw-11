@@ -2,9 +2,11 @@ import './css/styles.css';
 import { fetchImages } from './fetchImages'
 import Notiflix from 'notiflix';
 import SimpleLightbox from "simplelightbox";
+import "simplelightbox/dist/simple-lightbox.min.css";
 
 let search = '';
 let page = 1;
+let lightbox = '';
 
 const form = document.querySelector(".search-form");
 const gallery = document.querySelector(".gallery");
@@ -41,7 +43,9 @@ function createImages(images) {
     // console.log(images.hits);
     const markup = images.map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => 
         `<div class="photo-card">
-            <img src="${webformatURL}" alt="${tags}" loading="lazy" width="250px"/>
+            <a class="gallery__item" href="${largeImageURL}">
+                <img src="${webformatURL}" title="${tags}" loading="lazy" width="400px" height="250px"/>
+            </a>
             <div class="info">
                 <p class="info-item">
                 <b>Likes ${likes}</b>
@@ -59,17 +63,21 @@ function createImages(images) {
         </div>`).join('');
     // gallery.innerHTML = markup;
     gallery.insertAdjacentHTML('beforeend', markup)
+
+    lightbox = new SimpleLightbox('.photo-card a', { captionDelay: 250, overlayOpacity: 0.5 });
+    // console.dir(lightbox);
 }
 
 function onAddImages(entries, observe) {
-    console.log(entries);
-    console.log(search);
+    // console.log(entries);
+    // console.log(search);
 
         entries.forEach((entry) => {
         if(entry.isIntersecting){
             page+=1
             fetchImages(search, page).then(data => {
                 createImages(data.hits);
+                lightbox.refresh();
                 if(page === 13){
                     observe.unobserve(guard)
                 }
