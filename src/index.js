@@ -1,6 +1,7 @@
 import './css/styles.css';
 import { fetchImages } from './fetchImages'
 import Notiflix from 'notiflix';
+import SimpleLightbox from "simplelightbox";
 
 let search = '';
 let page = 1;
